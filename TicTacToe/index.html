@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" type="text/css" href="index.css" />
+  </head>
+  <body>
+    <h1>Kółko i krzyżyk</h1>
+    <div class="board-wrapper">
+      <h1 id="info" class="info"></h1>
+      <div id="board" class="board">
+        <div id="mark0" class="mark"></div>
+        <div id="mark1" class="mark"></div>
+        <div id="mark2" class="mark"></div>
+        <div id="mark3" class="mark"></div>
+        <div id="mark4" class="mark"></div>
+        <div id="mark5" class="mark"></div>
+        <div id="mark6" class="mark"></div>
+        <div id="mark7" class="mark"></div>
+        <div id="mark8" class="mark"></div>
+      </div>
+    </div>
+    <script>
+      let marks = [""];
+      function checkForWinner() {
+        //check rows
+        let announceWinner = mark => {
+          if (mark !== "X" && mark !== "O") return;
+          document.getElementById("board").classList += " disable";
+          let info = document.getElementById("info");
+          info.innerHTML = `${mark} have won!`;
+          info.classList += " visible";
+        };
+        //check rows
+        if (marks[0] === marks[1] && marks[1] === marks[2]) {
+          announceWinner(marks[0]);
+        }
+        if (marks[3] === marks[4] && marks[4] === marks[5]) {
+          announceWinner(marks[3]);
+        }
+        if (marks[6] === marks[7] && marks[7] === marks[8]) {
+          announceWinner(marks[6]);
+        }
+
+        //check columns
+        if (marks[0] === marks[3] && marks[3] === marks[6]) {
+          announceWinner(marks[0]);
+        }
+        if (marks[1] === marks[4] && marks[4] === marks[7]) {
+          announceWinner(marks[1]);
+        }
+        if (marks[2] === marks[5] && marks[5] === marks[8]) {
+          announceWinner(marks[2]);
+        }
+
+        //check diagonals
+        if (marks[0] === marks[4] && marks[4] === marks[8]) {
+          announceWinner(marks[0]);
+        }
+        if (marks[2] === marks[4] && marks[4] === marks[6]) {
+          announceWinner(marks[2]);
+        }
+      }
+      for (let i = 0; i <= 8; i++) {
+        marks[i] = "";
+        const element = document.getElementById(`mark${i}`);
+        element.onclick = event => {
+          if (!element.innerHTML) {
+            element.innerHTML = "X";
+            marks[i] = "X";
+          } else {
+            element.innerHTML = "";
+            marks[i] = "";
+          }
+
+          checkForWinner();
+        };
+      }
+    </script>
+  </body>
+</html>
