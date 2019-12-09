@@ -23,61 +23,123 @@
       </div>
     </div>
     <script>
-      let marks = [""];
-      function checkForWinner() {
-        //check rows
-        let announceWinner = mark => {
-          if (mark !== "X" && mark !== "O") return;
-          document.getElementById("board").classList += " disable";
-          let info = document.getElementById("info");
-          info.innerHTML = `${mark} have won!`;
-          info.classList += " visible";
-        };
+      let marks = new Array(9);
+
+      let scores = {
+        X: 1,
+        O: -1,
+        Tie: 0
+      };
+
+      function minimax(marks, depth, isMaximizing) {
+        let result = whoWon();
+        if (result) return scores[result];
+
+        if (isMaximizing) {
+          let bestScore = -Infinity;
+          for (let i = 0; i < marks.length; i++) {
+            if (!marks[i]) {
+              marks[i] = "X";
+              let score = minimax(marks, depth + 1, false);
+              marks[i] = null;
+              bestScore = Math.max(score, bestScore);
+            }
+          }
+          return bestScore;
+        } else {
+          let bestScore = Infinity;
+          for (let i = 0; i < marks.length; i++) {
+            if (!marks[i]) {
+              marks[i] = "O";
+              let score = minimax(marks, depth + 1, true);
+              marks[i] = null;
+              bestScore = Math.min(score, bestScore);
+            }
+          }
+          return bestScore;
+        }
+      }
+
+      function aiMove() {
+        let bestScore = -Infinity;
+        let bestMove;
+        for (let i = 0; i < marks.length; i++) {
+          if (!marks[i]) {
+            marks[i] = "X";
+            let score = minimax(marks, 0, true);
+            marks[i] = null;
+            if (score > bestScore) {
+              bestScore = score;
+              bestMove = i;
+            }
+          }
+        }
+
+        marks[bestMove] = "X";
+        document.getElementById(`mark${bestMove}`).innerHTML = "X";
+        announceWinner(whoWon());
+      }
+
+      function announceWinner(mark) {
+        if (mark !== "X" && mark !== "O" && mark !== "Tie") return;
+        document.getElementById("board").classList += " disable";
+        let info = document.getElementById("info");
+
+        if (mark === "Tie") info.innerHTML = `${mark}!`;
+        else info.innerHTML = `${mark} have won!`;
+        info.classList += " visible";
+      }
+
+      function whoWon() {
         //check rows
         if (marks[0] === marks[1] && marks[1] === marks[2]) {
-          announceWinner(marks[0]);
+          return marks[0];
         }
         if (marks[3] === marks[4] && marks[4] === marks[5]) {
-          announceWinner(marks[3]);
+          return marks[3];
         }
         if (marks[6] === marks[7] && marks[7] === marks[8]) {
-          announceWinner(marks[6]);
+          return marks[6];
         }
 
         //check columns
         if (marks[0] === marks[3] && marks[3] === marks[6]) {
-          announceWinner(marks[0]);
+          return marks[0];
         }
         if (marks[1] === marks[4] && marks[4] === marks[7]) {
-          announceWinner(marks[1]);
+          return marks[1];
         }
         if (marks[2] === marks[5] && marks[5] === marks[8]) {
-          announceWinner(marks[2]);
+          return marks[2];
         }
 
         //check diagonals
         if (marks[0] === marks[4] && marks[4] === marks[8]) {
-          announceWinner(marks[0]);
+          return marks[0];
         }
         if (marks[2] === marks[4] && marks[4] === marks[6]) {
-          announceWinner(marks[2]);
+          return marks[2];
         }
+
+        for (let j = 0; j < marks.length; j++) {
+          if (!marks[j]) return;
+        }
+
+        return "Tie";
       }
-      for (let i = 0; i <= 8; i++) {
-        marks[i] = "";
+
+      for (let i = 0; i < marks.length; i++) {
         const element = document.getElementById(`mark${i}`);
         element.onclick = event => {
           if (!element.innerHTML) {
-            element.innerHTML = "X";
-            marks[i] = "X";
-          } else {
-            element.innerHTML = "";
-            marks[i] = "";
+            element.innerHTML = "O";
+            marks[i] = "O";
+            announceWinner(whoWon());
+            aiMove();
           }
-
-          checkForWinner();
         };
       }
+      aiMove();
     </script>
   </body>
 </html>
