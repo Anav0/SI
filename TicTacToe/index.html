@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="index.css" />
   </head>
   <body>
-    <h1>Kółko i krzyżyk</h1>
+    <h1>Minimax Tic Tac Toe</h1>
     <div class="board-wrapper">
       <h1 id="info" class="info"></h1>
       <div id="board" class="board">
@@ -66,7 +66,7 @@
         for (let i = 0; i < marks.length; i++) {
           if (!marks[i]) {
             marks[i] = "X";
-            let score = minimax(marks, 0, true);
+            let score = minimax(marks, 0, false);
             marks[i] = null;
             if (score > bestScore) {
               bestScore = score;
@@ -87,7 +87,8 @@
 
         if (mark === "Tie") info.innerHTML = `${mark}!`;
         else info.innerHTML = `${mark} have won!`;
-        info.classList += " visible";
+        info.classList.remove("invisible");
+        info.classList.add("visible");
       }
 
       function whoWon() {
@@ -128,18 +129,29 @@
         return "Tie";
       }
 
-      for (let i = 0; i < marks.length; i++) {
-        const element = document.getElementById(`mark${i}`);
-        element.onclick = event => {
-          if (!element.innerHTML) {
-            element.innerHTML = "O";
-            marks[i] = "O";
-            announceWinner(whoWon());
-            aiMove();
-          }
-        };
+      function reset() {
+        let info = document.getElementById(`info`);
+        info.classList.remove("visible");
+        info.classList.add("invisible");
+        document.getElementById(`board`).classList.remove("disable");
+
+        for (let i = 0; i < marks.length; i++) {
+          const element = document.getElementById(`mark${i}`);
+          element.innerHTML = "";
+          marks[i] = null;
+          element.onclick = event => {
+            if (!element.innerHTML) {
+              element.innerHTML = "O";
+              marks[i] = "O";
+              announceWinner(whoWon());
+              aiMove();
+            }
+          };
+        }
+        aiMove();
       }
-      aiMove();
+      document.getElementById(`info`).onclick = () => reset();
+      reset();
     </script>
   </body>
 </html>
